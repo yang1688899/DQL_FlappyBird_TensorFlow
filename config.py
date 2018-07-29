@@ -1,2 +1,11 @@
 INPUT_SIZE = (84,84)
+OBSERVATION_STEP = 10000
 REPLAY_MEMORY = 50000
+BATCH_SIZE = 64
+ESPLION = 0.1
+FINIAL_ESPLION = 0.0001
+EXPLORE = 3000000
+CHECKFILE = './checkpoints/model.ckpt'
+CHECKDIR = './checkpoints'
+LOGFILE = './log/info.log'
+SAVEFILE = './save.p'
