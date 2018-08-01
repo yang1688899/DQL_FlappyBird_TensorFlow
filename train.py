@@ -24,6 +24,7 @@ with tf.Session() as sess:
 
 
     start_time = time.time()
+    print("trainning......")
     while(True):
 
         #在replay memory 中随机抽取batch,进行训练
@@ -33,11 +34,11 @@ with tf.Session() as sess:
         action_batch = np.array([tran[1] for tran in batch])
         curr_reward_batch = np.array([tran[2] for tran in batch])
         next_state_batch = np.array([tran[3] for tran in batch]).reshape([-1, 84, 84, 4])
-        terminal_batch = np.array([tran[4] for tran in batch])
+        terminal_batch = np.logical_not(np.array([tran[4] for tran in batch]))
 
         reward_futher_batch = sess.run(prediction, feed_dict={x: next_state_batch})
         max_further_reward_batch = np.max(reward_futher_batch, axis=1)
-        target_reward_batch = curr_reward_batch + (-terminal_batch * max_further_reward_batch)
+        target_reward_batch = curr_reward_batch + config.GAMMA*(terminal_batch * max_further_reward_batch)
 
         sess.run(train_step,feed_dict={x:state_batch, y:target_reward_batch, a:action_batch})
 
@@ -55,11 +56,11 @@ with tf.Session() as sess:
         if step%1000==0:
             train_loss = sess.run(loss,feed_dict={x:state_batch, y:target_reward_batch, a:action_batch})
             duration = time.time() - start_time
-            logger.info("step %d: loss is %g (%0.3f sec)" % (step, train_loss, duration))
+            logger.info("step %d: loss is %g, esplion is %g (%0.3f sec)" % (step, train_loss,esplion, duration))
             start_time = time.time()
         if step%10000==0:
             saver.save(sess, config.CHECKFILE, global_step=step)
-            utils.save_to_pickle([game_state,replay,curr_state,esplion])
+            utils.save_to_pickle([game_state,replay,curr_state,esplion],config.SAVEFILE)
             print('writing checkpoint at step %s' % step)
 
 

@@ -135,12 +135,15 @@ def start_or_restore_training(sess,saver,checkpoint_dir):
 #初始化，或回复game_state,replay,curr_state,esplion等
 def init_or_restore_training_obj(savefile,x, sess, prediction):
     if os.path.exists(savefile):
+        print("restore the game from savefile")
         save_obj = load_from_pickle(savefile)
         game_state = save_obj[0]
         replay = save_obj[1]
         curr_state = save_obj[2]
         esplion = save_obj[3]
+        print(len(replay))
     else:
+        print("init the game")
         esplion = config.ESPLION
         game_state = wrapped_flappy_bird.GameState()
         curr_state, replay = observation(game_state, esplion, x, sess, prediction, step=config.OBSERVATION_STEP)
